@@ -1,0 +1,19 @@
+{
+  "succes": true,
+  "data": [
+    {
+      "id": 3,
+      "name": "Codemasters",
+      "description": "Is coding your passion? Codemasters will give you the skills and the tools to become the best developer possible. We specialize in full stack web development and data science",
+      "website": "www.codemasters.com",
+      "phone": "(333) 333-3333",
+      "email": "enroll@codemasters.com",
+      "address": "85 South Prospect Street Burlington VT 05405",
+      "slug": "codemasters",
+      "photo": "photo_codemasters.jpg",
+      "cost": 0,
+      "rating": 9.2
+    }
+  ],
+  "id": 3
+}

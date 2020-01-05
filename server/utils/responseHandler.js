@@ -1,6 +1,6 @@
 const responseData = function(response, statusCode, values) {
   var data = {
-    succes: true,
+    success: true,
     data: values
   };
   response.status(statusCode).json(data);
@@ -9,7 +9,7 @@ const responseData = function(response, statusCode, values) {
 
 const responseMessage = function(response, statusCode, message) {
   var data = {
-    succes: true,
+    success: true,
     message: message
   };
   response.status(statusCode).json(data);
