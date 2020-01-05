@@ -13,6 +13,7 @@
                             v-model="name"
                             :error-messages="nameErrors"
                             :counter="30"
+                            maxlength="30"
                             label="Nama Lengkap"
                             required
                             @input="$v.name.$touch()"
@@ -20,12 +21,35 @@
                             ></v-text-field>
 
                             <v-text-field
+                            v-model="no_hp"
+                            :error-messages="noHpErrors"
+                            label="No HP"
+                            type="number"
+                            required
+                            maxlength="20"
+                            @input="$v.no_hp.$touch()"
+                            @blur="$v.no_hp.$touch()"
+                            ></v-text-field>
+
+                            <v-text-field
                             v-model="email"
                             :error-messages="emailErrors"
                             label="E-mail"
                             required
+                            maxlength="50"
                             @input="$v.email.$touch()"
                             @blur="$v.email.$touch()"
+                            ></v-text-field>
+
+                            <v-text-field
+                            v-model="username"
+                            :error-messages="usernameErrors"
+                            :counter="20"
+                            maxlength="20"
+                            label="Username"
+                            required
+                            @input="$v.username.$touch()"
+                            @blur="$v.username.$touch()"
                             ></v-text-field>
 
                             <v-text-field
@@ -35,6 +59,7 @@
                                 :type="show1 ? 'text' : 'password'"
                                 label="Password"
                                 counter
+                                required
                                 @click:append="show1 = !show1"
                                 @input="$v.password.$touch()"
                                 @blur="$v.password.$touch()"
@@ -47,39 +72,53 @@
                                 :type="show1 ? 'text' : 'password'"
                                 label="Repeat Password"
                                 counter
+                                required
                                 @click:append="show1 = !show1"
                                 @input="$v.repeatPassword.$touch()"
                                 @blur="$v.repeatPassword.$touch()"
                             ></v-text-field>
 
-                            <!-- <v-checkbox
-                            v-model="checkbox"
-                            :error-messages="checkboxErrors"
-                            label="Do you agree?"
-                            required
-                            @change="$v.checkbox.$touch()"
-                            @blur="$v.checkbox.$touch()"
-                            ></v-checkbox> -->
+                            <p>Daftar sebagai</p>
+                            <v-radio-group v-model="level" row required>
+                              <v-radio label="User" color="primary" value="user"></v-radio>
+                              <v-radio label="Pelapak" color="primary" value="pelapak"></v-radio>
+                            </v-radio-group>
+                            <v-divider></v-divider><br>
                             <p>Sudah punya akun? Login <nuxt-link to="/login">disini</nuxt-link></p>
                             <v-btn class="mr-2" color="success" @click="regsiter()" tile>Daftar</v-btn>
-                            <!-- <v-btn @click="clear" color="error" tile>Clear</v-btn> -->
                         </form>
                     </v-card-text>
                 </v-card>
             </v-flex>
         </v-layout>
+
+        <v-snackbar
+          v-model="snackbar"
+          :timeout="2000"
+        >
+          {{ message }}
+          <v-btn
+            color="blue"
+            text
+            @click="snackbar = false"
+          >
+            Close
+          </v-btn>
+        </v-snackbar>
     </v-container>
 </template>
 <script>
   import { validationMixin } from 'vuelidate'
-  import { required, maxLength, email, sameAs, minLength } from 'vuelidate/lib/validators'
+  import { required, maxLength, email, numeric, sameAs, minLength } from 'vuelidate/lib/validators'
 
   export default {
     mixins: [validationMixin],
-
     validations: {
         name: { required, maxLength: maxLength(30) },
+        no_hp: { required, numeric, minLength: minLength(7) },
+        level: { required },
         email: { required, email },
+        username: { required, maxLength: maxLength(20) },
         password: {
             required,
             minLength: minLength(8)
@@ -90,16 +129,19 @@
             sameAsPassword: sameAs('password')
         },
     },
-
     data: () => ({
         name: '',
+        no_hp: '',
+        level: 'user',
         email: '',
+        username: '',
         password: '',
         repeatPassword: '',
         show1: false,
-        loading: null
+        loading: null,
+        snackbar: false,
+        message: ''
     }),
-
     computed: {
       nameErrors () {
         const errors = []
@@ -108,11 +150,26 @@
         !this.$v.name.required && errors.push('Nama lengkap tidak boleh kosong')
         return errors
       },
+      noHpErrors () {
+        const errors = []
+        if (!this.$v.no_hp.$dirty) return errors
+        !this.$v.no_hp.minLength && errors.push('')
+        !this.$v.no_hp.numeric && errors.push('No HP tidak valid')
+        !this.$v.no_hp.required && errors.push('No HP tidak boleh kosong')
+        return errors
+      },
       emailErrors () {
         const errors = []
         if (!this.$v.email.$dirty) return errors
         !this.$v.email.email && errors.push('Email tidak valid')
         !this.$v.email.required && errors.push('Email tidak boleh kosong')
+        return errors
+      },
+      usernameErrors () {
+        const errors = []
+        if (!this.$v.username.$dirty) return errors
+        !this.$v.username.maxLength && errors.push('Username maksimal 20 karakter')
+        !this.$v.username.required && errors.push('Username tidak boleh kosong')
         return errors
       },
       passwordErrors () {
@@ -136,15 +193,22 @@
       regsiter () {
         this.$v.$touch();
         if (this.$v.$pending || this.$v.$error){
-
+          // Error State
+          this.message = "Ada Kesalahan, Periksa kembali input yang ada"
+          this.snackbar = true
         }else {
-            const obj = {
-                nama: this.name,
-                email: this.email,
-                password: this.password
-            }
-            this.$store.dispatch('setUserLogin', obj)
-            this.$router.push('/')
+          // Starting Register State
+          const obj = {
+            nama: this.name,
+            no_hp: this.no_hp,
+            level: this.level,
+            email: this.email,
+            username: this.username,
+            password: this.password,
+            passwordConfirm: this.repeatPassword
+          }
+          this.clear()
+          this.$store.dispatch('tryLogin', obj)
         }
       },
       clear () {

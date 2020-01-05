@@ -10,12 +10,12 @@
                     <v-card-text>
                         <form>
                             <v-text-field
-                            v-model="email"
-                            :error-messages="emailErrors"
-                            label="E-mail"
+                            v-model="username"
+                            :error-messages="usernameErrors"
+                            label="Username"
                             required
-                            @input="$v.email.$touch()"
-                            @blur="$v.email.$touch()"
+                            @input="$v.username.$touch()"
+                            @blur="$v.username.$touch()"
                             ></v-text-field>
 
                             <v-text-field
@@ -41,33 +41,30 @@
 </template>
 <script>
   import { validationMixin } from 'vuelidate'
-  import { required, maxLength, email, sameAs, minLength } from 'vuelidate/lib/validators'
+  import { required } from 'vuelidate/lib/validators'
 
   export default {
     mixins: [validationMixin],
 
     validations: {
-        email: { required, email },
+        username: { required },
         password: {
             required
         }
     },
 
     data: () => ({
-        name: '',
-        email: '',
+        username: '',
         password: '',
-        repeatPassword: '',
         show1: false,
         loading: null
     }),
 
     computed: {
-      emailErrors () {
+      usernameErrors () {
         const errors = []
-        if (!this.$v.email.$dirty) return errors
-        !this.$v.email.email && errors.push('Email tidak valid')
-        !this.$v.email.required && errors.push('Email tidak boleh kosong')
+        if (!this.$v.username.$dirty) return errors
+        !this.$v.username.required && errors.push('Username tidak boleh kosong')
         return errors
       },
       passwordErrors () {
@@ -85,21 +82,25 @@
 
         }else {
             const obj = {
-                nama: this.name,
-                email: this.email,
+                username: this.username,
                 password: this.password
             }
-            this.$store.dispatch('setUserLogin', obj)
-            this.$router.push('/')
+            return this.$axios({
+              method: 'post',
+              url: 'http://localhost:3000/api/authentication/login',
+              data: {
+                username: this.username,
+                password: this.password
+              }
+            }).then((result) => {
+              console.log(result)
+              this.$store.dispatch('setUserLogin', obj)
+              this.$router.push('/')
+            }).catch((err) => {
+              console.log(err) 
+            });
         }
-      },
-      clear () {
-        this.$v.$reset()
-        this.name = ''
-        this.email = ''
-        this.password = ''
-        this.repeatPassword = ''
-      },
+      }
     },
   }
 </script>

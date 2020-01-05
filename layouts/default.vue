@@ -45,24 +45,52 @@
         <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>
       </v-btn>
 
-      <v-toolbar-title v-text="title" />
+      <v-toolbar-title><nuxt-link to="/" style="text-decoration: none; color: #ffffff">{{title}}</nuxt-link></v-toolbar-title>
       <v-spacer />
       <template v-if="userLogin != null">
-        <v-btn class="mr-3" tile color="primary">{{userLogin.email}}</v-btn>
+        <v-btn class="mr-3" tile color="primary">{{userLogin.username}}</v-btn>
       </template>
-      <v-btn v-else to="/login" outlined tile>
+      <v-btn v-else to="/login" outlined tile class="mr-3">
         Login
       </v-btn>
 
+      <!-- <v-menu
+        :close-on-content-click="false"
+        offset-x
+        offset-y
+      >
+        <template v-slot:activator="{ on }">
+          <v-btn
+            icon
+            v-on="on"
+            fab
+          >
+            <v-icon>mdi-dots-vertical</v-icon>
+          </v-btn>
+        </template>
+
+          <v-list>
+            <v-list-item>
+              <v-list-item-action>
+                 <v-switch
+                    v-model="$vuetify.theme.dark"
+                    color="primary"
+                  ></v-switch>
+              </v-list-item-action>
+              <v-list-item-title>Enable Dark Theme</v-list-item-title>
+            </v-list-item>
+
+          </v-list>
+      </v-menu> -->
+
     </v-app-bar>
 
-    <v-content>
+    <v-content style="margin-bottom: 70px">
       <nuxt />
     </v-content>
 
     <v-bottom-navigation
       fixed
-      color="deep-purple accent-4"
       class="hidden-md-and-up"
     >
       <v-btn v-for="(item, i) in itemsLink" :key="i" :to="item.to">
@@ -80,8 +108,7 @@
 
 <script>
 export default {
-  data () {
-    return {
+  data: vm => ({
       activeBtn: 1,
       clipped: true,
       drawer: null,
@@ -90,7 +117,10 @@ export default {
       right: true,
       rightDrawer: false,
       title: 'Tel-Shop'
-    }
+  }),
+  beforeDestroy () {
+    if (!this.$vuetify) return
+    this.$vuetify.theme.dark = this.initialDark
   },
   computed: {
     itemsLink() {

@@ -1,7 +1,7 @@
 {
-  "name": "Tel-Shop",
+  "name": "tel-shop",
   "version": "1.0.0",
-  "description": "Tel-Shop",
+  "description": "telkom university shop",
   "author": "rdfariz/azmi",
   "private": true,
   "scripts": {
@@ -17,7 +17,12 @@
     "cross-env": "^5.2.0",
     "express": "^4.16.4",
     "nuxt": "^2.0.0",
-    "vuelidate": "^0.7.4"
+    "vuelidate": "^0.7.4",
+    "body-parser": "^1.19.0",
+    "colors": "^1.4.0",
+    "cryptr": "^6.0.1",
+    "morgan": "^1.9.1",
+    "mysql-model": "0.0.3"
   },
   "devDependencies": {
     "nodemon": "^1.18.9",
