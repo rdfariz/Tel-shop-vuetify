@@ -103,12 +103,35 @@
       <v-progress-circular indeterminate size="64"></v-progress-circular>
     </v-overlay>
 
+     <v-snackbar v-model="snackBar.active" right :color="snackBar.type" :timeout="5000">
+       {{snackBar.message}}
+      <v-btn text @click="snackBar.active = false">
+        Close
+      </v-btn>
+    </v-snackbar>
+
   </v-app>
 </template>
 
 <script>
 export default {
+  created() {
+    this.$store.watch(state => state.snack.active, () => {
+      const msg = this.$store.state.snack.message
+      if (msg !== null) {
+        this.snackBar.type = this.$store.state.snack.type
+        this.snackBar.message = this.$store.state.snack.message
+        this.snackBar.active = true
+        this.$store.commit('setSnack', null)
+      }
+    })
+  },
   data: vm => ({
+      snackBar: {
+        active: false,
+        message: null,
+        type: null
+      },
       activeBtn: 1,
       clipped: true,
       drawer: null,
@@ -131,7 +154,7 @@ export default {
     },
     userLogin() {
       return this.$store.getters.userLogin
-    }
+    },
   },
 }
 </script>

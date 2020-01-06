@@ -2,7 +2,7 @@
     <v-container grid-list-xs>
         <v-layout row wrap justify-center>
             <v-flex xs12 md6>
-                <v-card flat outlined tile :loading="loading" :disabled="loading">
+                <v-card flat outlined tile>
                     <v-card-title primary-title>
                         Daftar Akun
                     </v-card-title>
@@ -92,19 +92,6 @@
             </v-flex>
         </v-layout>
 
-        <v-snackbar
-          v-model="snackbar"
-          :timeout="2000"
-        >
-          {{ message }}
-          <v-btn
-            color="blue"
-            text
-            @click="snackbar = false"
-          >
-            Close
-          </v-btn>
-        </v-snackbar>
     </v-container>
 </template>
 <script>
@@ -137,10 +124,7 @@
         username: '',
         password: '',
         repeatPassword: '',
-        show1: false,
-        loading: null,
-        snackbar: false,
-        message: ''
+        show1: false
     }),
     computed: {
       nameErrors () {
@@ -153,9 +137,9 @@
       noHpErrors () {
         const errors = []
         if (!this.$v.no_hp.$dirty) return errors
-        !this.$v.no_hp.minLength && errors.push('')
         !this.$v.no_hp.numeric && errors.push('No HP tidak valid')
         !this.$v.no_hp.required && errors.push('No HP tidak boleh kosong')
+        !this.$v.no_hp.minLength && errors.push('No HP terlalu pendek')
         return errors
       },
       emailErrors () {
@@ -194,8 +178,7 @@
         this.$v.$touch();
         if (this.$v.$pending || this.$v.$error){
           // Error State
-          this.message = "Ada Kesalahan, Periksa kembali input yang ada"
-          this.snackbar = true
+          this.$store.commit('setSnack', {active: true, message: "Ada Kesalahan, Periksa kembali input yang ada", type: 'error'})
         }else {
           // Starting Register State
           const obj = {
@@ -207,8 +190,7 @@
             password: this.password,
             passwordConfirm: this.repeatPassword
           }
-          this.clear()
-          this.$store.dispatch('tryLogin', obj)
+          this.$store.dispatch('tryRegister', obj)
         }
       },
       clear () {
