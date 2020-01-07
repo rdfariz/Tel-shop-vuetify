@@ -16,4 +16,14 @@ const responseMessage = function(response, statusCode, message) {
   response.end();
 };
 
-module.exports = { responseData, responseMessage };
+const responseAuth = function(response, statusCode, message, values) {
+  var data = {
+    success: true,
+    message: message,
+    data: values
+  };
+  response.status(statusCode).json(data);
+  response.end();
+};
+
+module.exports = { responseData, responseMessage, responseAuth };

@@ -2,7 +2,11 @@ const connectDB = require("../config/db");
 const Crypter = require("cryptr");
 const crypter = new Crypter("myTotalySecretKey");
 const ErrorHandler = require("../utils/errorResponse");
-const { responseData, responseMessage } = require("../utils/responseHandler");
+const {
+  responseData,
+  responseMessage,
+  responseAuth
+} = require("../utils/responseHandler");
 
 const Users = connectDB.extend({
   tableName: "users"
@@ -26,7 +30,7 @@ exports.register = async (res, next, data) => {
         if (err) return next(err);
 
         // output response
-        responseData(res, 201, pushData);
+        responseAuth(res, 201, "Berhasil registrasi!", pushData);
       });
     }
   );
@@ -53,7 +57,7 @@ exports.login = async (res, next, data) => {
       }
 
       // output response
-      responseMessage(res, 200, "Berhasil login!");
+      responseAuth(res, 200, "Berhasil login!", rows);
     }
   );
 };
