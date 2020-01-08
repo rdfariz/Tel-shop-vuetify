@@ -1,5 +1,4 @@
 export const state = () => ({
-   _bash: "http://localhost:3000",
    snack: {
       active: false,
       type: null,
@@ -9,19 +8,26 @@ export const state = () => ({
    loading: null,
    itemsLink: {
       default: [
-         {icon: 'mdi-apps',title: 'Beranda',to: '/'},
+         {icon: 'mdi-apps',title: 'Beranda',to: '/'}
       ],
       lapak: [
          {icon: 'mdi-apps',title: 'Beranda',to: '/'},
          {icon: 'mdi-store',title: 'Lapak Saya',to: '/lapak'},
+         {icon: 'mdi-settings',title: 'Pengaturan',to: '/settings'},
          {icon: 'mdi-logout',title: 'Logout',to: '/logout'},
       ],
       user: [
          {icon: 'mdi-apps',title: 'Beranda',to: '/'},
          {icon: 'mdi-account',title: 'Profil',to: '/profil'},
+         {icon: 'mdi-settings',title: 'Pengaturan',to: '/settings'},
          {icon: 'mdi-logout',title: 'Logout',to: '/logout'},
       ],
-   }
+   },
+   dummy: [
+      {id: 'barang_1', title: 'Nasi rebus', tag: ['makanan'], description: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nobis tempore facere facilis, suscipit quas, earum repellat aliquid voluptatum placeat magnam reiciendis perspiciatis amet.", rating: 4.5, media: 'https://cdn-brilio-net.akamaized.net/news/2019/11/12/173878/1125844-nasi-goreng-hongkong.jpg', cod: 'FIT'},
+      {id: 'barang_2', title: 'Es teh panas', tag: ['minuman'], description: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nobis tempore facere facilis, suscipit quas, earum repellat aliquid voluptatum placeat magnam reiciendis perspiciatis amet.", rating: 3.5, media: 'https://inilahinfo.com/wp-content/uploads/2019/04/Mana-Yang-Lebih-Sehat-Teh-Panas-Atau-Es-Teh-Yang-Dingin.jpg', cod: 'FEB'},
+      {id: 'barang_3', title: 'Mouse asli', tag: ['binatang'], description: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nobis tempore facere facilis, suscipit quas, earum repellat aliquid voluptatum placeat magnam reiciendis perspiciatis amet.", rating: 3.5, media: 'https://awsimages.detik.net.id/community/media/visual/2018/12/21/172b5b63-a43f-4ced-852e-e89e7301b13c_43.jpeg?w=700&q=90', cod: 'WDP'}
+   ]
 })
 export const getters = {
    userLogin: state => {
@@ -43,7 +49,7 @@ export const getters = {
          }
       }else {
          return state.itemsLink.default
-      }        
+      }
    }
 }
 export const mutations = {
@@ -66,16 +72,21 @@ export const mutations = {
    }
 }
 export const actions = {
+   async nuxtServerInit({dispatch, commit}, {req}) {
+      console.log('---')
+   },
    setLoading({commit, state}, newState) {
+      // Managing global Loading
       if (state.loading == true) {
          setTimeout(() => {
-            commit('setLoading', newState)  
+            commit('setLoading', newState)
          }, 700);
       }else {
          commit('setLoading', newState)
       }
    },
    setUserLogin({ commit }, newState) {
+      // Parsing data to state userLogin
       commit('setUserLogin', newState)
    },
    tryLogout({dispatch}) {
@@ -83,28 +94,17 @@ export const actions = {
       dispatch('setUserLogin', null)
       dispatch('setLoading', false)
    },
-   tryLogin({dispatch, commit, state}, req) {
+   async tryLogin({dispatch, commit, state}, req) {
       dispatch('setLoading', true)
-      return this.$axios({
-         method: 'post',
-         url: state._bash+'/api/authentication/login',
-         data: {
-            username: req.username,
-            password: req.password
-         }
-      }).then((result) => {
+      await this.$axios.post('api/authentication/login', req)
+      .then((result) => {
          const res = result.data
          if (res.success && res.data) {
-            const obj = {
-               nama: res.data.name,
-               no_hp: res.data.no_hp,
-               level: res.data.level,
-               email: res.data.email,
-               username: res.data.username
-            }
-            dispatch('setUserLogin', obj)
+            // Parsing data to mutations userLogin
+            dispatch('setUserLogin', res.data)
             this.$router.push('/')
          }else {
+            // state if not success
             return commit('setSnack', {active: true, message: "Ada kesalahan server", type: 'error'})
          }
       }).catch((err) => {
@@ -117,26 +117,18 @@ export const actions = {
          dispatch('setLoading', false)
       })
    },
-   tryRegister({dispatch, commit, state}, req) {
+   async tryRegister({dispatch, commit, state}, req) {
       dispatch('setLoading', true)
-      return this.$axios({
-         method: 'post',
-         url: state._bash+'/api/authentication/register',
-         data: req
-      }).then((result) => {
+      await this.$axios.post('api/authentication/register', req)
+      .then((result) => {
          const res = result.data
          if (res.success && res.data) {
-            const obj = {
-               nama: res.data.name,
-               no_hp: res.data.no_hp,
-               level: res.data.level,
-               email: res.data.email,
-               username: res.data.username
-            }
+            // Parsing data to mutations userLogin
+            dispatch('setUserLogin', res.data)
             commit('setSnack', {active: true, message: "Berhasil membuat akun", type: 'success'})
-            dispatch('setUserLogin', obj)
             this.$router.push('/')
          }else {
+            // state if not success
             return commit('setSnack', {active: true, message: "Ada kesalahan server", type: 'error'})
          }
       }).catch((err) => {

@@ -14,7 +14,7 @@
         
         </v-flex>
         <v-flex xs12 md8 flex-wrap>
-            <v-card-title><nuxt-link style="text-decoration: none" :to="`/product/`+data.id">{{data.title}}</nuxt-link></v-card-title>
+            <v-card-title>{{data.title}}</v-card-title>
 
             <v-card-text>
                 <v-row
@@ -27,7 +27,7 @@
                     dense
                     half-increments
                     readonly
-                    size="14"
+                    size="20"
                 ></v-rating>
 
                 <div class="grey--text ml-4">{{data.rating}}</div>

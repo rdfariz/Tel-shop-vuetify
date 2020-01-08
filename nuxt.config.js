@@ -6,8 +6,8 @@ module.exports = {
   ** Headers of the page
   */
   head: {
-    titleTemplate: '%s - ' + process.env.npm_package_name,
-    title: process.env.npm_package_name || '',
+    titleTemplate: '%s',
+    title: 'Tel-Shop',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -25,11 +25,13 @@ module.exports = {
   ** Global CSS
   */
   css: [
+    '~/assets/style.css'
   ],
   /*
   ** Plugins to load before mounting the App
   */
   plugins: [
+    '~/plugins/axios'
   ],
   /*
   ** Nuxt.js dev-modules
@@ -47,6 +49,18 @@ module.exports = {
     // Doc: https://github.com/nuxt-community/dotenv-module
     '@nuxtjs/dotenv',
   ],
+  // Page & Layout Transition
+  layoutTransition: {
+    name: 'fade',
+    mode: 'out-in'
+  },
+  pageTransition: {
+    name: 'fade',
+    mode: 'out-in',
+    beforeEnter (el) {
+      // console.log('Before enter...');
+    }
+  },
   /*
   ** Axios module configuration
   ** See https://axios.nuxtjs.org/options

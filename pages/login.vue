@@ -45,12 +45,13 @@ import { validationMixin } from 'vuelidate'
 import { required } from 'vuelidate/lib/validators'
 
 export default {
+  head: {
+    title: 'Login User'
+  },
   mixins: [validationMixin],
   validations: {
       username: { required },
-      password: {
-          required
-      }
+      password: { required }
   },
   data: () => ({
       username: '',

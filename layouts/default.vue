@@ -1,5 +1,5 @@
 <template>
-  <v-app dark>
+  <v-app>
     <v-navigation-drawer
       v-model="drawer"
       :mini-variant="miniVariant"
@@ -8,6 +8,20 @@
       app
     >
       <v-list>
+
+        <v-list-item
+          @click.stop="miniVariant = !miniVariant"
+        >
+          <v-list-item-action>
+            <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Mini Variant</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-divider></v-divider>
+
         <v-list-item
           v-for="(item, i) in itemsLink"
           :key="i"
@@ -24,6 +38,7 @@
         </v-list-item>
 
       </v-list>
+
     </v-navigation-drawer>
 
     <v-app-bar
@@ -37,18 +52,62 @@
       height="65"
     >
       <v-app-bar-nav-icon class="hidden-sm-and-down" @click.stop="drawer = !drawer" />
-      <v-btn
-        icon
-        @click.stop="miniVariant = !miniVariant"
-        class="hidden-sm-and-down" 
-      >
-        <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>
-      </v-btn>
 
       <v-toolbar-title><nuxt-link to="/" style="text-decoration: none; color: #ffffff">{{title}}</nuxt-link></v-toolbar-title>
       <v-spacer />
       <template v-if="userLogin != null">
-        <v-btn class="mr-3" tile color="primary">{{userLogin.username}}</v-btn>
+        <!-- <v-btn class="mr-3" rounded color="success">{{userLogin.username}}</v-btn> -->
+        <v-chip
+          class="v-chip--active"
+          pill
+          to="/profil"
+        >
+          <v-avatar left>
+              <v-icon>mdi-account-circle</v-icon>
+          </v-avatar>
+          {{userLogin.username}}
+        </v-chip>
+        <!-- <v-menu
+          v-model="menu"
+          bottom
+          right
+          transition="scale-transition"
+          origin="top right"
+        >
+          <template v-slot:activator="{ on }">
+            <v-chip
+              pill
+              v-on="on"
+            >
+              <v-avatar left>
+                 <v-icon>mdi-account-circle</v-icon>
+              </v-avatar>
+              {{userLogin.username}}
+            </v-chip>
+          </template>
+          <v-card width="300">
+            <v-list>
+              <v-list-item>
+                <v-list-item-avatar>
+                  <v-icon>mdi-account-circle</v-icon>
+                </v-list-item-avatar>
+                <v-list-item-content>
+                  <v-list-item-title>{{userLogin.username}}</v-list-item-title>
+                  <v-list-item-subtitle>{{userLogin.email}}</v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+
+              <v-list-item>
+                <v-list-item-avatar>
+                  <v-icon>mdi-logout</v-icon>
+                </v-list-item-avatar>
+                <v-list-item-content>
+                  <v-list-item-title>Logout</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+          </v-card>
+        </v-menu> -->
       </template>
       <v-btn v-else to="/login" outlined tile class="mr-3">
         Login
@@ -132,19 +191,14 @@ export default {
         message: null,
         type: null
       },
+      menu: false,
       activeBtn: 1,
       clipped: true,
       drawer: null,
       fixed: false,
       miniVariant: true,
-      right: true,
-      rightDrawer: false,
       title: 'Tel-Shop'
   }),
-  beforeDestroy () {
-    if (!this.$vuetify) return
-    this.$vuetify.theme.dark = this.initialDark
-  },
   computed: {
     itemsLink() {
       return this.$store.getters.itemsLink

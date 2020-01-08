@@ -57,7 +57,7 @@ exports.login = async (res, next, data) => {
       }
 
       // output response
-      responseAuth(res, 200, "Berhasil login!", rows);
+      responseAuth(res, 200, "Berhasil login!", rows[0]);
     }
   );
 };

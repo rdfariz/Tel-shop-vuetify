@@ -5,19 +5,19 @@
       <div  style="position: sticky !important; top: 80px !important;">
         <v-card flat outlined tile>
           <v-card-title primary-title>
-            Location
+            Cari sesuai tempat
           </v-card-title>
           <v-autocomplete
             v-model="selectLocation"
             :loading="loading"
-            :items="items"
+            :items="states"
             :search-input.sync="search"
             class="mx-4"
-            flat
-            label="What state are you from?"
+            label="Pilih Tempat COD"
           ></v-autocomplete>
-          <v-card-actions>
-            <v-btn @click="findProduct()" color="red" class="white--text" tile style="width: 100% !important">Find Product</v-btn>
+          <v-card-actions class="mx-2 mb-2">
+            <v-btn @click="findProduct()" color="red" class="white--text" tile>Cari Produk</v-btn>
+            <v-btn @click="showAllProduct()" v-if="message.text != null" color="primary" class="white--text" tile>Tampilkan semua</v-btn>
           </v-card-actions>
         </v-card>
       </div>
@@ -40,15 +40,13 @@ import productCard from '@/components/productCard'
 export default {
     asyncData({isDev, route, store, env, params, query, req, res, redirect, error}) {
       store.dispatch('setLoading', true)
-      let data = []
-      const lorem = "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nobis tempore facere facilis, suscipit quas, earum repellat aliquid voluptatum placeat magnam reiciendis perspiciatis amet."
-      data.push({id: 'barang_1', title: 'Nasi rebus', tag: ['makanan'], description: lorem, rating: 4.5, media: ['https://cdn-brilio-net.akamaized.net/news/2019/11/12/173878/1125844-nasi-goreng-hongkong.jpg'], cod: 'FIT'})
-      data.push({id: 'barang_2', title: 'Es teh panas', tag: ['minuman'], description: lorem, rating: 3.5, media: ['https://inilahinfo.com/wp-content/uploads/2019/04/Mana-Yang-Lebih-Sehat-Teh-Panas-Atau-Es-Teh-Yang-Dingin.jpg'], cod: 'FEB'})
-      data.push({id: 'barang_3', title: 'Mouse asli', tag: ['binatang'], description: lorem, rating: 3.5, media: ['https://awsimages.detik.net.id/community/media/visual/2018/12/21/172b5b63-a43f-4ced-852e-e89e7301b13c_43.jpeg?w=700&q=90'], cod: 'WDP'})
+      let data = store.state.dummy
       let cod = ['FIT','FEB','WDP']
       store.dispatch('setLoading', false)
       return {product: data, productFilter: data, states: cod}
-      
+    },
+    head: {
+      title: 'Beranda'
     },
     data: () => ({
       loading: false,
@@ -86,6 +84,11 @@ export default {
         }
         // this.product = []
         // this.product.push({id: 'barang_1', title: 'Title Product', subtitle: 'Subtitle Product', description: 'Desc Product', rating: 3.5, cod: 'WDP'})
+      },
+      showAllProduct() {
+        this.selectLocation = null
+        this.productFilter = this.$store.state.dummy
+        this.message = {type: null,text: null}
       }
     },
     components: {

@@ -99,6 +99,9 @@
   import { required, maxLength, email, numeric, sameAs, minLength } from 'vuelidate/lib/validators'
 
   export default {
+    head: {
+      title: 'Register User'
+    },
     mixins: [validationMixin],
     validations: {
         name: { required, maxLength: maxLength(30) },
