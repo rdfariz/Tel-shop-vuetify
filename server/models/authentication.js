@@ -1,12 +1,9 @@
 const connectDB = require("../config/db");
 const Crypter = require("cryptr");
 const crypter = new Crypter("myTotalySecretKey");
+const jwt = require("jsonwebtoken");
 const ErrorHandler = require("../utils/errorResponse");
-const {
-  responseData,
-  responseMessage,
-  responseAuth
-} = require("../utils/responseHandler");
+const { sendTokenResponse, responseData } = require("../utils/responseHandler");
 
 const Users = connectDB.extend({
   tableName: "users"
@@ -25,12 +22,20 @@ exports.register = async (res, next, data) => {
         return next(new ErrorHandler("username telah terdaftar!", 400));
       }
 
+      // encrypt password
+      var encryptedPassword = crypter.encrypt(data.password);
+      data.password = encryptedPassword;
+
       const pushData = await new Users(data);
       pushData.save((err, result) => {
         if (err) return next(err);
 
+        const token = jwt.sign({ username: pushData.username }, "secretajah", {
+          expiresIn: "1d"
+        });
+
         // output response
-        responseAuth(res, 201, "Berhasil registrasi!", pushData);
+        sendTokenResponse(res, 201, "Berhasil registrasi!", pushData, token);
       });
     }
   );
@@ -56,8 +61,26 @@ exports.login = async (res, next, data) => {
         return next(new ErrorHandler("username atau password salah!", 400));
       }
 
+      // generate token
+      const token = jwt.sign({ username: rows[0].username }, "secretajah", {
+        expiresIn: "1d"
+      });
+
       // output response
-      responseAuth(res, 200, "Berhasil login!", rows[0]);
+      sendTokenResponse(res, 200, "Berhasil login!", rows[0], token);
+    }
+  );
+};
+
+// get me
+exports.getMe = async (res, next, username) => {
+  await users.find(
+    "first",
+    { where: `username = '${username}'` },
+    async (err, rows, field) => {
+      if (err) return next(new ErrorHandler("Token tidak sesuai!", 400));
+
+      responseData(res, 200, rows);
     }
   );
 };

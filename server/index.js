@@ -3,6 +3,7 @@ const consola = require("consola");
 const morgan = require("morgan");
 const color = require("colors");
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 const errorHandler = require("./middleware/error");
 const authRouter = require("./routes/authentication");
 const { Nuxt, Builder } = require("nuxt");
@@ -22,6 +23,9 @@ app.use(
     extended: false
   })
 );
+
+// set cookie-parser
+app.use(cookieParser());
 
 async function start() {
   // Init Nuxt.js

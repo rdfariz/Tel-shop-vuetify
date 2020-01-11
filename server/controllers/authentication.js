@@ -1,7 +1,5 @@
-const Crypter = require("cryptr");
-const crypter = new Crypter("myTotalySecretKey");
 const ErrorHandler = require("../utils/errorResponse");
-const { register, login } = require("../models/authentication");
+const { register, login, getMe } = require("../models/authentication");
 
 // register
 exports.register = (req, res, next) => {
@@ -33,16 +31,12 @@ exports.register = (req, res, next) => {
     return next(new ErrorHandler("Isi field password!", 400));
   }
 
-  // encrypt password
-  var encryptedPassword = crypter.encrypt(data.password);
-
   // validasi password and password confirm
   if (data.password !== data.passwordConfirm) {
     return next(new ErrorHandler("konfirmasi password tidak sesuai!", 400));
   }
 
-  // adding encrypted password into data object
-  data.password = encryptedPassword;
+  // delete password confirm
   delete data.passwordConfirm;
 
   register(res, next, data);
@@ -63,4 +57,9 @@ exports.login = (req, res, next) => {
   }
 
   login(res, next, data);
+};
+
+// get current logged in user
+exports.getMe = (req, res, next) => {
+  getMe(res, next, req.user.username);
 };
