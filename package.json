@@ -24,6 +24,7 @@
     "morgan": "^1.9.1",
     "mysql-model": "0.0.3",
     "nuxt": "^2.0.0",
+    "validate.js": "^0.13.1",
     "vuelidate": "^0.7.4"
   },
   "devDependencies": {

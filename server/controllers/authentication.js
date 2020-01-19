@@ -1,4 +1,5 @@
 const ErrorHandler = require("../utils/errorResponse");
+const { validateRegister, validateLogin } = require("../utils/validation");
 const { register, login, getMe } = require("../models/authentication");
 
 // register
@@ -6,29 +7,11 @@ exports.register = (req, res, next) => {
   // get all form data
   var data = { ...req.body };
 
-  // validasi
-  if (data.nama == "") {
-    return next(new ErrorHandler("Isi field nama!", 400));
-  }
+  // validation check
+  var errors = validateRegister(data);
 
-  if (data.email == "") {
-    return next(new ErrorHandler("Isi field email!", 400));
-  }
-
-  if (data.no_hp == "") {
-    return next(new ErrorHandler("Isi field no hp!", 400));
-  }
-
-  if (data.level == "") {
-    return next(new ErrorHandler("Isi field level!", 400));
-  }
-
-  if (data.username == "") {
-    return next(new ErrorHandler("Isi field username!", 400));
-  }
-
-  if (data.password == "") {
-    return next(new ErrorHandler("Isi field password!", 400));
+  if (errors) {
+    return next(new ErrorHandler(errors[0], 400));
   }
 
   // validasi password and password confirm
@@ -47,13 +30,11 @@ exports.login = (req, res, next) => {
   // get all form data
   var data = { ...req.body };
 
-  // validasi
-  if (data.username == "") {
-    return next(new ErrorHandler("Isi field username!", 400));
-  }
+  // validation check
+  var errors = validateLogin(data);
 
-  if (data.password == "") {
-    return next(new ErrorHandler("Isi field password!", 400));
+  if (errors) {
+    return next(new ErrorHandler(errors[0], 400));
   }
 
   login(res, next, data);
