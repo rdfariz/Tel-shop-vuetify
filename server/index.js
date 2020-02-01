@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const errorHandler = require("./middleware/error");
 const authRouter = require("./routes/authentication");
+const productRouter = require('./routes/product');
 const { Nuxt, Builder } = require("nuxt");
 const app = express();
 
@@ -44,6 +45,7 @@ async function start() {
   // Write API here
   // set routing
   app.use("/api/authentication", authRouter);
+  app.use("/api/products", productRouter);
 
   // adding errors middleware
   app.use(errorHandler);

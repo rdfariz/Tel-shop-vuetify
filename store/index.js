@@ -1,3 +1,7 @@
+import jwt from 'jsonwebtoken'
+import Cookies from 'universal-cookie'
+const cookies = new Cookies();
+
 export const state = () => ({
    snack: {
       active: false,
@@ -5,6 +9,7 @@ export const state = () => ({
       message: null
    },
    userLogin: null,
+   token: null,
    loading: null,
    itemsLink: {
       default: [
@@ -50,6 +55,9 @@ export const getters = {
       }else {
          return state.itemsLink.default
       }
+   },
+   token: state => {
+      return state.token
    }
 }
 export const mutations = {
@@ -69,11 +77,35 @@ export const mutations = {
    },
    setUserLogin(state, newState) {
       state.userLogin = newState
+   },
+   setToken(state, newState) {
+      state.token = newState
    }
 }
 export const actions = {
-   async nuxtServerInit({dispatch, commit}, {req}) {
-      console.log('---')
+   nuxtServerInit({dispatch}, {req}) {
+      const cookies = new Cookies(req.headers.cookie);
+      const token = cookies.get('__zmrz')
+      if (token) {
+         const decoded = jwt.verify(token, "secretajah")
+         dispatch('setCookies', {status: true, token: token})
+         dispatch('setUserLogin', decoded.data)
+      }else {
+         dispatch('setCookies', {status: false, token: null})
+         dispatch('setUserLogin', null)
+      }
+   },
+   setCookies({commit, state}, newState) {
+      if (newState.status == true) {
+         cookies.set('__cfduid', newState.token.split('.')[1], {path: '/'});
+         cookies.set('__zmrz', newState.token, {path: '/'});
+         cookies.set('__qqko', newState.token.split('.')[2], {path: '/'});
+      }else {
+         cookies.remove('__zmrz', { path: '/' });
+         cookies.remove('__cfduid', { path: '/' });
+         cookies.remove('__qqko', { path: '/' });
+      }
+      commit('setToken', newState.token)
    },
    setLoading({commit, state}, newState) {
       // Managing global Loading
@@ -91,6 +123,7 @@ export const actions = {
    },
    tryLogout({dispatch}) {
       dispatch('setLoading', true)
+      dispatch('setCookies', {status: false, token: null})
       dispatch('setUserLogin', null)
       dispatch('setLoading', false)
    },
@@ -101,6 +134,7 @@ export const actions = {
          const res = result.data
          if (res.success && res.data) {
             // Parsing data to mutations userLogin
+            dispatch('setCookies', {status: true, token: res.token})
             dispatch('setUserLogin', res.data)
             this.$router.push('/')
          }else {

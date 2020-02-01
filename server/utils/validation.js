@@ -80,3 +80,62 @@ exports.validateLogin = data => {
 
   return validate(data, constraint, { format: "flat" });
 };
+
+exports.validateProduct = data => {
+  // schema
+  var constraint = {
+    id_pelapak: {
+      presence: {
+        allowEmpty: false
+      },
+      numericality: {
+        onlyInteger: true
+      }
+    },
+    nama_produk: {
+      presence: {
+        allowEmpty: false
+      }
+    },
+    detail: {
+      presence: {
+        allowEmpty: false
+      }
+    },
+    harga: {
+      presence: {
+        allowEmpty: false
+      },
+      numericality: {
+        onlyInteger: true,
+        noStrings: true
+      }
+    },
+    jumlah_stok: {
+      presence: {
+        allowEmpty: false
+      },
+      numericality: {
+        onlyInteger: true,
+        noStrings: true
+      }
+    },
+    kondisi: {
+      presence: {
+        allowEmpty: false
+      }
+    },
+    kategori: {
+      presence: {
+        allowEmpty: false
+      }
+    },
+    lokasi: {
+      presence: {
+        allowEmpty: false
+      }
+    }
+  };
+
+  return validate(data, constraint, { format: "flat" });
+};

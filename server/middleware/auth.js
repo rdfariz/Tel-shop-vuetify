@@ -30,7 +30,7 @@ exports.protect = async (req, res, next) => {
 
     await users.find(
       "first",
-      { where: `username = '${decoded.username}'` },
+      { where: `username = '${decoded.data.username}'` },
       async (err, rows, field) => {
         if (err) {
           return next(new ErrorResponse("username salah!", 400));

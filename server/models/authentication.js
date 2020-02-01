@@ -30,7 +30,7 @@ exports.register = async (res, next, data) => {
       pushData.save((err, result) => {
         if (err) return next(err);
 
-        const token = jwt.sign({ username: pushData.username }, "secretajah", {
+        const token = jwt.sign({ data: pushData }, "secretajah", {
           expiresIn: "1d"
         });
 
@@ -62,7 +62,7 @@ exports.login = async (res, next, data) => {
       }
 
       // generate token
-      const token = jwt.sign({ username: rows[0].username }, "secretajah", {
+      const token = jwt.sign({ data: rows[0] }, "secretajah", {
         expiresIn: "1d"
       });
 
